@@ -1,0 +1,159 @@
+
+# 1.Excel
+#  1. missing values imputation: using the mean values of the other replicates
+#  2. transfer to log2 values (zero raw values into zero log2 values)
+#  3. t.test(male. female, 2,3)
+#  4. Sort by p-values, insert the Rank column and create the ranking values
+#  5. FDR = p-value * 335 / Rank   (Pvalue * total-count /rank ) 
+
+## copy the comparison, and paste into All_335_proteins_comparison.txt
+
+##################################################
+##### Figure 5A pearson correlation heatmap ######
+################################################## 
+library("RColorBrewer")
+library("pheatmap")
+
+total <- read.table("Protein/All_335_proteins_comparison.txt",header=T,row.names=1,sep="\t")
+total[1:5,]
+counts <- total[,1:10]
+counts[1:5,]
+
+mat.dist = as.matrix(dist(t(counts)))
+
+pdf("Protein/Figure5A_correlation_heatmap_protein.pdf")
+pheatmap(cor(mat.dist),cluster_rows = FALSE,cluster_cols=FALSE, color=colorRampPalette(c("lightyellow", "grey", "seagreen"))(600),breaks = seq(-1,1,length.out = 600))
+dev.off()
+
+### top 100 variable proteins 
+counts2 <- data.frame(counts,Variance=apply(counts,1,var))
+top100 <- counts2[order(-counts2$Variance),][1:100,1:10]
+top100[1:5,]
+mat.dist2 = as.matrix(dist(t(top100)))
+   
+pheatmap(cor(mat.dist2),cluster_rows = FALSE,cluster_cols=FALSE, color=colorRampPalette(c("lightyellow", "grey", "seagreen"))(600),breaks = seq(-1,1,length.out = 600))
+
+
+
+
+
+##################################################
+############## Figure 5B PCA plot ################
+##################################################
+options(width=300)
+total <- read.table("Protein/All_335_proteins_comparison.txt",header=T,row.names=1,sep="\t")
+pca1 = prcomp(t(total[,1:10]), scale. = TRUE)
+summary(pca1)
+ # Importance of components:
+ #                           PC1   PC2    PC3     PC4     PC5    PC6     PC7
+ # Standard deviation     11.103 8.327 5.8581 5.63500 4.92965 4.2336 3.64929
+ # Proportion of Variance  0.368 0.207 0.1024 0.09479 0.07254 0.0535 0.03975
+ # Cumulative Proportion   0.368 0.575 0.6774 0.77218 0.84472 0.8982 0.93798
+ #                            PC8     PC9      PC10
+ # Standard deviation     3.51542 2.90160 3.956e-14
+ # Proportion of Variance 0.03689 0.02513 0.000e+00
+ # Cumulative Proportion  0.97487 1.00000 1.000e+00
+  
+round(pca1$x,4)
+ #              PC1      PC2     PC3     PC4     PC5     PC6     PC7     PC8     PC9 PC10
+ # Male1    -2.4490  11.1978 -2.7034  4.9685 -1.4618  9.4574 -0.8853  0.8987 -0.6498    0
+ # Male2    -7.2968  12.3136  0.0872  6.2431  6.1491 -6.3936  1.0161 -1.8102  0.7903    0
+ # Male3    -9.6630   1.2661  2.6031 -4.6236 -3.9248 -0.7261  4.2408  5.3354  4.2362    0
+ # Male4    -8.3743   0.9016 -3.8116 -2.9184 -9.4295 -2.8657  0.3293 -4.4508 -3.0429    0
+ # Male5   -10.0140  -0.9069  8.0200 -7.7862  4.2907  1.4703 -5.7162 -0.9250 -0.8711    0
+ # Female1  16.5169  -2.2288 11.8676  5.4614 -3.8072 -0.5225  0.9844 -0.8235 -0.5239    0
+ # Female2  22.3433   6.7725 -5.4585 -8.4385  2.2416 -1.0188  0.1628  0.3710  0.0432    0
+ # Female3  -3.1149  -9.5308 -1.7184  0.8467  4.9210  0.4929  4.4027  3.1533 -5.2968    0
+ # Female4   2.1701  -8.1098 -5.6353  5.3965 -1.9163 -2.9910 -6.5458  3.9066  1.1898    0
+ # Female5  -0.1182 -11.6754 -3.2506  0.8505  2.9372  3.0971  2.0112 -5.6557  4.1249    0
+
+male <- pca1$x[1:5,1:2]
+female <- pca1$x[6:10,1:2]
+male
+female
+
+pdf("Protein/Figure5B_PCA_protein.pdf")
+plot(male[,1],male[,2],xlim=c(-20,30),ylim=c(-20,20),pch=21, cex=3, lwd=2, bg="cyan3", col="black", xlab="Principal component 1 (36.8%)", ylab="Principal component 2 (20.7%)")
+points(female[,1],female[,2],pch=21,cex=3,lwd=2, bg="brown1", col="black")
+dev.off()
+
+ 
+ 
+ 
+
+##################################################
+############# Figure 5C volcano plot #############
+##################################################
+total <- read.table("Protein/All_335_proteins_comparison.txt",header=T,row.names=1,sep="\t")
+total[1:3,]
+fdrP <- total[total$FDR<0.1,]
+male   <- fdrP[fdrP$Log2FC>0,] ## male enriched proteins
+female <- fdrP[fdrP$Log2FC<0,] ## female enriched proteins
+dim(total)  ## 335
+dim(fdrP)   ## 46
+dim(male)   ## 30
+dim(female) ## 16
+
+pdf("Protein/Figure5C_volcano_plot_protein.pdf")
+plot(total$Log2FC,-log(total$FDR,10),col="grey", pch=21, xlim=c(-10, 25),ylim=c(0, 8), xlab="Log2 difference (Male/Female)", ylab="-log10(FDR)")
+points(male$Log2FC, -log(male$FDR,10), pch=21,  cex=1, bg="cyan3", lwd=0.8,col="black")
+points(female$Log2FC, -log(female$FDR,10),  pch=21, cex=1, bg="brown1", lwd=0.8,col="black")
+dev.off()
+
+ 
+ 
+
+
+##################################################
+######### Figure 5D DEPs Z-score heatmap #########
+##################################################
+ 
+library("RColorBrewer")
+library("pheatmap")
+
+total <- read.table("Protein/All_335_proteins_comparison.txt",header=T,row.names=1,sep="\t")
+total[1:5,]
+
+degs <- total[total$FDR<0.1,]
+degs2 <- degs[c("A2ASQ1","Q8CAY6","P05063","P24369","Q9ER00","P10922","P10630","Q9Z1Z2","P42669","P43274","P26040","P15864","Q62465","P13020","P09405","Q9CQM9","Q9R1B9","P17182","Q61937","Q62165","Q8R081","Q9QZF2","P61089","P10493","Q9QYB1","Q60972","Q9CR16","O55023","O08807","P97315","P16014","Q61112","Q62356","P08121","Q8R1U2","Q02819","Q01149","P15116","Q6P1D5","P06837","Q07797","P04925","P11087","Q9QY76","P62631","P05202"),]
+deg_values <- degs2[,1:10]
+dim(deg_values)
+deg_values[1:5,]
+
+deg_zscore <- t(scale(t(deg_values)))
+ 
+pdf("Protein/Figure5D_zscore_heatmap_protein.pdf")
+pheatmap(deg_zscore, color = colorRampPalette(rev(brewer.pal(n =5, name ="RdYlGn")))(500), breaks = seq(-2, 2, length.out = 500), cluster_cols = FALSE, cluster_rows=FALSE)
+dev.off()
+ 
+
+ 
+
+##################################################
+######### Figure 5F IGFBP Z-score heatmap #########
+##################################################
+
+library("RColorBrewer")
+library("pheatmap")
+
+total <- read.table("Protein/All_335_proteins_comparison.txt",header=T,row.names=1,sep="\t")
+total[1:5,]
+
+degs2 <- total[c("Q80YX1","P18406","P11276","Q921I1","P07724","P16045","Q0VGU4","Q03517","P12023","O35887","P47878","Q61147","P16014","P47867","Q61581","Q62356","P07141","Q02819","P15116"),]
+deg_values <- degs2[,1:10]
+dim(deg_values)
+deg_values[1:5,]
+
+rowMeans()
+
+deg_zscore <- t(scale(t(deg_values)))
+deg_zscore2 <- data.frame(Male=rowMeans(deg_zscore[,1:5]), Female=rowMeans(deg_zscore[,6:10]))
+
+pdf("Protein/Figure5F_zscore_heatmap_protein.pdf")
+pheatmap(deg_zscore2, color = colorRampPalette(rev(brewer.pal(n =5, name ="RdYlBu")))(500), breaks = seq(-1, 1, length.out = 500), cluster_cols = FALSE, cluster_rows=FALSE)
+dev.off()
+ 
+
+
+
+

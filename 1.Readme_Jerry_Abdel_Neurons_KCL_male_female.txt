@@ -1,0 +1,36 @@
+Readme:
+
+1. Project
+   cultured sensory neurons from male and female mice
+   KCL treated for 45-60 minutes
+   collect proteins from the medium (secreted proteins) and RNAs from the cells
+   Mass Spec and RNA-seq
+
+2. Download raw data from the Abdel lab
+
+ RNAseq: rename 
+  ## The lables are likely wrong, because the Y-chr-genes are expressed in "DRGF", not "DRGM" samples.
+  ## Thus, "DRGF" --> male sample;  "DRGM" --> female sample
+ mv DRGF1_R1_001.fastq.gz AbdelLab_NeuronKCL_RNAseq_male_rep1_1.fastq.gz
+ mv DRGF1_R2_001.fastq.gz AbdelLab_NeuronKCL_RNAseq_male_rep1_2.fastq.gz
+ mv DRGF2_R1_001.fastq.gz AbdelLab_NeuronKCL_RNAseq_male_rep2_1.fastq.gz
+ mv DRGF2_R2_001.fastq.gz AbdelLab_NeuronKCL_RNAseq_male_rep2_2.fastq.gz
+ mv DRGF3_R1_001.fastq.gz AbdelLab_NeuronKCL_RNAseq_male_rep3_1.fastq.gz
+ mv DRGF3_R2_001.fastq.gz AbdelLab_NeuronKCL_RNAseq_male_rep3_2.fastq.gz
+ mv DRGF4_R1_001.fastq.gz AbdelLab_NeuronKCL_RNAseq_male_rep4_1.fastq.gz
+ mv DRGF4_R2_001.fastq.gz AbdelLab_NeuronKCL_RNAseq_male_rep4_2.fastq.gz
+ mv DRGF5_R1_001.fastq.gz AbdelLab_NeuronKCL_RNAseq_male_rep5_1.fastq.gz
+ mv DRGF5_R2_001.fastq.gz AbdelLab_NeuronKCL_RNAseq_male_rep5_2.fastq.gz
+ 
+ mv DRGM1_R1_001.fastq.gz AbdelLab_NeuronKCL_RNAseq_female_rep1_1.fastq.gz
+ mv DRGM1_R2_001.fastq.gz AbdelLab_NeuronKCL_RNAseq_female_rep1_2.fastq.gz
+ mv DRGM2_R1_001.fastq.gz AbdelLab_NeuronKCL_RNAseq_female_rep2_1.fastq.gz
+ mv DRGM2_R2_001.fastq.gz AbdelLab_NeuronKCL_RNAseq_female_rep2_2.fastq.gz
+ mv DRGM3_R1_001.fastq.gz AbdelLab_NeuronKCL_RNAseq_female_rep3_1.fastq.gz
+ mv DRGM3_R2_001.fastq.gz AbdelLab_NeuronKCL_RNAseq_female_rep3_2.fastq.gz
+ mv DRGM4_R1_001.fastq.gz AbdelLab_NeuronKCL_RNAseq_female_rep4_1.fastq.gz
+ mv DRGM4_R2_001.fastq.gz AbdelLab_NeuronKCL_RNAseq_female_rep4_2.fastq.gz
+ mv DRGM5_R1_001.fastq.gz AbdelLab_NeuronKCL_RNAseq_female_rep5_1.fastq.gz
+ mv DRGM5_R2_001.fastq.gz AbdelLab_NeuronKCL_RNAseq_female_rep5_2.fastq.gz
+
+ 
